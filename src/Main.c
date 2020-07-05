@@ -1,6 +1,14 @@
 #include <stdio.h>
+#include <stdlib.h>
 
-int main()
+#include <Filter/ParseArgs.h>
+
+
+int main(int argc, char* argv[])
 {
-	printf("Hello World!");
+	LaunchConfig launchCfg;
+	if (!parseArgs(argc, argv, &launchCfg))
+		return EXIT_FAILURE;
+
+
 }
