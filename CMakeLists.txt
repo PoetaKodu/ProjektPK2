@@ -2,9 +2,11 @@ cmake_minimum_required(VERSION 3.11)
 
 set(PRJ_SOURCE_FILES
 		include/Filter/ParseArgs.h
-		
+		include/Filter/App.h
+
 		src/Main.c
 		src/ParseArgs.c
+		src/App.c
 	)
 
 add_executable(Filter ${PRJ_SOURCE_FILES})
