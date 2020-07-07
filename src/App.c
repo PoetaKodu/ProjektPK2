@@ -12,5 +12,9 @@ bool run(LaunchConfig *launchCfg)
 	if (!prefixTree)
 		return false;
 
-	return filterInputFile(launchCfg->inFilePath, launchCfg->outFilePath, prefixTree);
+	bool result = filterInputFile(launchCfg->inFilePath, launchCfg->outFilePath, prefixTree);
+	
+	free(prefixTree);
+	
+	return result;
 }
