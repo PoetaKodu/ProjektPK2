@@ -6,7 +6,7 @@
 typedef struct
 {
 	char inFilePath[FILENAME_MAX];
-	char prefixesFilePath[FILENAME_MAX];
+	char prefixFilePath[FILENAME_MAX];
 
 	char outFilePath[FILENAME_MAX];
 } LaunchConfig;

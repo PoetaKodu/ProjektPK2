@@ -20,7 +20,7 @@ bool parseArgs(int argc, char *argv[], LaunchConfig * config)
 			}
 			else if (strcmp(argv[i], "-f") == 0) {
 				paramProvided[1] = true;
-				dest = config->prefixesFilePath;
+				dest = config->prefixFilePath;
 			}
 			else if (strcmp(argv[i], "-o") == 0) {
 				paramProvided[2] = true;

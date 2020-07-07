@@ -1,4 +1,6 @@
 #include <Filter/App.h>
+#include <Filter/PrefixTree.h>
+#include <Filter/Filter.h>
 
 #include <assert.h>
 
@@ -6,7 +8,9 @@ bool run(LaunchConfig *launchCfg)
 {
 	assert(launchCfg != NULL);
 
-	
+	PrefixTree const* prefixTree = buildPrefixTree(launchCfg->prefixFilePath);
+	if (!prefixTree)
+		return false;
 
-	return 1;
+	return filterInputFile(launchCfg->inFilePath, launchCfg->outFilePath, prefixTree);
 }
