@@ -1,6 +1,7 @@
 #include <Filter/ParseArgs.h>
 
 #include <assert.h>
+#include <string.h>
 
 bool parseArgs(int argc, char *argv[], LaunchConfig * config)
 {
