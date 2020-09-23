@@ -108,6 +108,28 @@ int64_t findNonWsInString(String const *str_, size_t startPos_)
 
 
 //////////////////////////////////////////////////////////////
+PairOfStrings splitString(String *src_, size_t where_)
+{
+	assert(src_ != NULL);
+
+
+	PairOfStrings result;
+	result.left = makeString();
+	result.right = makeString();
+
+	if (src_->len > 1)
+	{
+		reserveStringCapacity(&result.left, where_);
+		reserveStringCapacity(&result.right, src_->len - where_);
+
+		appendStringRaw(&result.left, src_->data, where_);
+		appendStringRaw(&result.right, src_->data + where_, src_->len - where_);
+	}
+
+	return result;
+}
+
+//////////////////////////////////////////////////////////////
 void appendString(String* str_, String const* toAppend_)
 {
 	assert(str_ != NULL && toAppend_ != NULL);

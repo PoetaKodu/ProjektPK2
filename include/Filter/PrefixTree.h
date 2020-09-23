@@ -19,4 +19,4 @@ PrefixTree* buildPrefixTree(const char* prefixFilePath);
 
 void destroyPrefixTree(PrefixTree* prefixTree_);
 
-void insertPrefixIntoTree(PrefixTree* root_, String prefix_);
+void insertPrefixIntoTree(PrefixTree* root_, String prefix_, size_t startCharacter);

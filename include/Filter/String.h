@@ -10,6 +10,12 @@ typedef struct
 	size_t capacity;
 } String;
 
+typedef struct
+{
+	String left;
+	String right;
+} PairOfStrings;
+
 String makeString();
 
 String makeStringWith(char const* bytes_, size_t len_);
@@ -28,6 +34,12 @@ int64_t findNonWsInString(String const *str_, size_t startPos_);
 
 // Cut before `where` index and preserve the left part;
 void cutStringLeft(String *str_, size_t where_);
+
+// Creates left and right string as follows:
+// left: [0; where_)
+// right: [where; length)
+// TODO: implement this:
+PairOfStrings splitString(String *src_, size_t where_);
 
 void appendString(String* str_, String const* toAppend_);
 
