@@ -168,6 +168,8 @@ void insertPrefixIntoTree(PrefixTree* root_, String prefix_, size_t startCharact
 			PrefixTree* node = root_->children[first];
 
 			size_t newStart = startCharacter;
+
+			// Czy można iść w dół drzewa?
 			if (shouldContinueDown(node, prefix_, &newStart))
 			{
 				root_ = node;
@@ -175,37 +177,61 @@ void insertPrefixIntoTree(PrefixTree* root_, String prefix_, size_t startCharact
 			}
 			else
 			{
+				// Trzeba rozbić aktualny przedrostek, by dodać nowy
 				PrefixTree* toSplit = node;
 
 				size_t splitAt = newStart - startCharacter;
 
+				// Rozbijanie przedrostka:
 				PairOfStrings splitted = splitString(&toSplit->prefix, splitAt);
 
+				// Stary tekst jest usuwany
 				destroyString(&toSplit->prefix);
 
-				root_->children[first] = malloc(sizeof(PrefixTree));
-				node = root_->children[first];
-
-				PrefixTree_ctorInit(node, splitted.left);
+				// Ustawianie zamiennika dla rozbitego kawałka prefixu:
+				// (zamiennik wchodzi na miejsce poprzedniego,
+				// poprzedni jest przypinany jako dziecko zamiennika)
+				// Notka: zamiennik nie jest liściem!
+				PrefixTree* replacement = malloc(sizeof(PrefixTree));
+				{
+					PrefixTree_ctorInit(replacement, splitted.left);
+					root_->children[first] = replacement;
+					node = root_->children[first];
+				}
+				
 				toSplit->prefix = splitted.right;
 
+				// Przypiecie pod zamiennika:
 				node->children[toSplit->prefix.data[0]] = toSplit;
 
-				node->children[prefix_.data[newStart]] = malloc(sizeof(PrefixTree));
-				PrefixTree_ctorInit(node->children[prefix_.data[newStart]], makeStringWith(prefix_.data + newStart, prefix_.len - newStart));
-				node->children[prefix_.data[newStart]]->isLeaf = true;
+				// Ustawianie nowo dodanego prefixu:
+				PrefixTree* newlyAdded = malloc(sizeof(PrefixTree));
+				{
+					String pref = makeStringWith(prefix_.data + newStart, prefix_.len - newStart);
+					PrefixTree_ctorInit(newlyAdded, pref);
+					newlyAdded->isLeaf = true;
+
+					node->children[prefix_.data[newStart]] = newlyAdded;
+				}
 
 				break;
 			}
 		}
 		else
 		{
-			root_->children[first] = malloc(sizeof(PrefixTree));
-			PrefixTree* node = root_->children[first];
+			// Na miejscu wstawiania pusto.
+			// Wstawiamy nowy:
+			PrefixTree* node = malloc(sizeof(PrefixTree));
+			root_->children[first] = node;
 			
+			// Czy trzeba uciąć prefix?
 			if (startCharacter > 0)
 			{
-				PrefixTree_ctorInit(node, makeStringWith(prefix_.data + startCharacter, prefix_.len - startCharacter));
+				String prefixCutout = makeStringWith(prefix_.data + startCharacter, prefix_.len - startCharacter);
+
+				PrefixTree_ctorInit(node, prefixCutout);
+
+				// Zwalniam stary, nieużywany prefix.
 				destroyString(&prefix_);
 			}
 			else
@@ -221,28 +247,33 @@ void insertPrefixIntoTree(PrefixTree* root_, String prefix_, size_t startCharact
 }
 
 ///////////////////////////////////////////////////////////
-bool prefixFilter(PrefixTree const* root_, String str_, String* matchedPrefix)
+bool prefixFilter(PrefixTree const* root_, String str_, String* matchedPrefix_)
 {
 	size_t charIdx = 0;
 
-	if (matchedPrefix)
-		*matchedPrefix = makeString();
+	if (matchedPrefix_)
+		*matchedPrefix_ = makeString();
 
 	while(charIdx < str_.len)
 	{
 		root_ = root_->children[str_.data[charIdx]];
+
 		if (!root_)
 			return false;
 
+		// Długości prefixów pasują?
 		if (charIdx + root_->prefix.len > str_.len)
 			return false;
 
+		// Wszystkie znaki prefixu pasują?
 		if (strncmp(str_.data + charIdx, root_->prefix.data, root_->prefix.len) != 0)
 			return false;
 
-		if (matchedPrefix)
-			appendString(matchedPrefix, &root_->prefix);
+		// TEMP: zbieram info o faktycznym przedrostku.
+		if (matchedPrefix_)
+			appendString(matchedPrefix_, &root_->prefix);
 
+		// Czy jest liściem drzewa?
 		if (root_->isLeaf)
 			return true;
 		
