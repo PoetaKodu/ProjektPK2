@@ -8,6 +8,32 @@
 
 #define TAB_SIZE 4
 
+////////////////////// DEKLARACJE (PRIV) ////////////////////////
+
+/** Dynamicznie tworzy korzeń drzewa prefixowego. 
+ * @return Korzeń stworzonego drzewa.
+ * */
+PrefixTree* makePrefixTree();
+
+/** Dodaje przedrostek do drzewa. 
+ * Zarządza czasem życia `prefix_`!
+ * @param root_ 			korzeń drzewa przedrostkowego
+ * @param prefix_ 			prefix do dodania
+ * */
+void insertPrefixIntoTree(PrefixTree* root_, String prefix_);
+
+/** Sprawdza czy dodając prefix powinniśmy iść dalej w dół drzewa, 
+ * czy rozbić aktualny węzeł i zrobić gałąź.
+ * @param node_ 			aktualnie rozpatrywany węzeł
+ * @param prefix_ 			dodawany prefix
+ * @param startCharacter_ 	aktualna pozycja do porównywania prefixu
+ * */
+bool shouldContinueDown(PrefixTree* node_, String prefix_, size_t* startCharacter_);
+
+////////////////////// IMPLEMENTACJA ////////////////////////////
+
+
+///////////////////////////////////////////////////
 void printIndent(size_t indent_)
 {
 	for(size_t i = 0; i < indent_; ++i)
@@ -69,24 +95,24 @@ void printTree(PrefixTree *node_, size_t indent_)
 }
 
 ///////////////////////////////////////////////////////////
-void PrefixTree_ctor(PrefixTree* node)
+void PrefixTree_ctor(PrefixTree* node_)
 {
-	node->isLeaf = false;
-	node->prefix = makeString();
+	node_->isLeaf = false;
+	node_->prefix = makeString();
 	for(size_t i = 0; i < CHAR_COMBINATIONS; ++i)
 	{
-		node->children[i] = NULL;
+		node_->children[i] = NULL;
 	}
 }
 
 ///////////////////////////////////////////////////////////
-void PrefixTree_ctorInit(PrefixTree* node, String str_)
+void PrefixTree_ctorInit(PrefixTree* node_, String str_)
 {
-	node->isLeaf = false;
-	node->prefix = str_;
+	node_->isLeaf = false;
+	node_->prefix = str_;
 	for(size_t i = 0; i < CHAR_COMBINATIONS; ++i)
 	{
-		node->children[i] = NULL;
+		node_->children[i] = NULL;
 	}
 }
 
@@ -116,7 +142,7 @@ PrefixTree* buildPrefixTree(const char* prefixFilePath)
 	{
 		printf("Read prefix: %.*s\n", word.len, word.data);
 
-		insertPrefixIntoTree(prefixTree, word, 0);
+		insertPrefixIntoTree(prefixTree, word);
 		
 		word = bfrReadUntilWs(reader);
 	}
@@ -142,22 +168,24 @@ void destroyPrefixTree(PrefixTree* prefixTree_)
 }
 
 ///////////////////////////////////////////////////////////
-bool shouldContinueDown(PrefixTree* node_, String prefix_, size_t* startCharacter)
+bool shouldContinueDown(PrefixTree* node_, String prefix_, size_t* startCharacter_)
 {
 	size_t numMatched = 0;
 	for(; numMatched < node_->prefix.len; ++numMatched)
 	{
-		if (node_->prefix.data[numMatched] != prefix_.data[*startCharacter + numMatched])
+		if (node_->prefix.data[numMatched] != prefix_.data[*startCharacter_ + numMatched])
 			break;
 	}
-	*startCharacter += numMatched;
+	*startCharacter_ += numMatched;
 	return numMatched == node_->prefix.len;
 }
 
 ///////////////////////////////////////////////////////////
-void insertPrefixIntoTree(PrefixTree* root_, String prefix_, size_t startCharacter)
+void insertPrefixIntoTree(PrefixTree* root_, String prefix_)
 {
 	assert(prefix_.len > 0);
+
+	size_t startCharacter = 0;
 
 	while (true)
 	{
@@ -247,12 +275,12 @@ void insertPrefixIntoTree(PrefixTree* root_, String prefix_, size_t startCharact
 }
 
 ///////////////////////////////////////////////////////////
-bool prefixFilter(PrefixTree const* root_, String str_, String* matchedPrefix_)
+bool prefixFilter(PrefixTree const* root_, String str_)
 {
 	size_t charIdx = 0;
 
-	if (matchedPrefix_)
-		*matchedPrefix_ = makeString();
+	// if (matchedPrefix_)
+	// 	*matchedPrefix_ = makeString();
 
 	while(charIdx < str_.len)
 	{
@@ -270,8 +298,8 @@ bool prefixFilter(PrefixTree const* root_, String str_, String* matchedPrefix_)
 			return false;
 
 		// TEMP: zbieram info o faktycznym przedrostku.
-		if (matchedPrefix_)
-			appendString(matchedPrefix_, &root_->prefix);
+		// if (matchedPrefix_)
+		// 	appendString(matchedPrefix_, &root_->prefix);
 
 		// Czy jest liściem drzewa?
 		if (root_->isLeaf)

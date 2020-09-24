@@ -14,12 +14,24 @@ typedef struct PrefixTree
 	bool isLeaf;
 } PrefixTree;
 
-PrefixTree* makePrefixTree();
 
-PrefixTree* buildPrefixTree(const char* prefixFilePath);
 
+/** Buduje drzewo przedrostkowe z wyrazów wczytanych z pliku. 
+ * @param prefixFilePath_ 	ścieżka do pliku z wyrazami
+ * @return Stworzone dynamicznie drzewo.
+ * */
+PrefixTree* buildPrefixTree(const char* prefixFilePath_);
+
+/** Zwalnia z pamięci zawartość drzewa. 
+ * Nie zwalnia korzenia!
+ * @param prefixTree_ 		korzeń drzewa przedrostkowego.
+ * */
 void destroyPrefixTree(PrefixTree* prefixTree_);
 
-void insertPrefixIntoTree(PrefixTree* root_, String prefix_, size_t startCharacter);
-
-bool prefixFilter(PrefixTree const* root_, String str_, String* matchedPrefix);
+/** Sprawdza, czy wyraz powinien zostać zaakceptowany przez filtr przedrostkowy. 
+ * @param root_				korzeń drzewa przedrostkowego
+ * @param str_ 				wyraz do sprawdzenia
+ * @returns true jeśli wyraz posiada przedrostek znajdujący się w drzewie,
+ * 			w przeciwnym wypadku false.
+ * */
+bool prefixFilter(PrefixTree const* root_, String str_);
