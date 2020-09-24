@@ -11,6 +11,7 @@ typedef struct PrefixTree
 {
 	struct PrefixTree* children[CHAR_COMBINATIONS];
 	String prefix;
+	bool isLeaf;
 } PrefixTree;
 
 PrefixTree* makePrefixTree();

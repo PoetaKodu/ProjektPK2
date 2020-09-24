@@ -70,6 +70,7 @@ void printTree(PrefixTree *node_, size_t indent_)
 ///////////////////////////////////////////////////////////
 void PrefixTree_ctor(PrefixTree* node)
 {
+	node->isLeaf = false;
 	node->prefix = makeString();
 	for(size_t i = 0; i < CHAR_COMBINATIONS; ++i)
 	{
@@ -80,6 +81,7 @@ void PrefixTree_ctor(PrefixTree* node)
 ///////////////////////////////////////////////////////////
 void PrefixTree_ctorInit(PrefixTree* node, String str_)
 {
+	node->isLeaf = false;
 	node->prefix = str_;
 	for(size_t i = 0; i < CHAR_COMBINATIONS; ++i)
 	{
@@ -156,19 +158,21 @@ void insertPrefixIntoTree(PrefixTree* root_, String prefix_, size_t startCharact
 {
 	assert(prefix_.len > 0);
 
-	PrefixTree* node = root_;
+	
 	const char first = prefix_.data[startCharacter];
 
-	if (node->children[first])
+	if (root_->children[first])
 	{
+		PrefixTree* node = root_->children[first];
+
 		size_t newStart = startCharacter;
-		if (shouldContinueDown(node->children[first], prefix_, &newStart))
+		if (shouldContinueDown(node, prefix_, &newStart))
 		{
-			insertPrefixIntoTree(node->children[first], prefix_, newStart);
+			insertPrefixIntoTree(node, prefix_, newStart);
 		}
 		else
 		{
-			PrefixTree* toSplit = node->children[first];
+			PrefixTree* toSplit = node;
 
 			size_t splitAt = newStart - startCharacter;
 
@@ -176,28 +180,33 @@ void insertPrefixIntoTree(PrefixTree* root_, String prefix_, size_t startCharact
 
 			destroyString(&toSplit->prefix);
 
-			node->children[first] = malloc(sizeof(PrefixTree));
-			PrefixTree_ctorInit(node->children[first], splitted.left);
+			root_->children[first] = malloc(sizeof(PrefixTree));
+			node = root_->children[first];
+
+			PrefixTree_ctorInit(node, splitted.left);
 			toSplit->prefix = splitted.right;
 
-			node->children[first]->children[toSplit->prefix.data[0]] = toSplit;
+			node->children[toSplit->prefix.data[0]] = toSplit;
 
-			node->children[first]->children[prefix_.data[newStart]] = malloc(sizeof(PrefixTree));
-			PrefixTree_ctorInit(node->children[first]->children[prefix_.data[newStart]], makeStringWith(prefix_.data + newStart, prefix_.len - newStart));
+			node->children[prefix_.data[newStart]] = malloc(sizeof(PrefixTree));
+			PrefixTree_ctorInit(node->children[prefix_.data[newStart]], makeStringWith(prefix_.data + newStart, prefix_.len - newStart));
 		}
 	}
 	else
 	{
-		node->children[first] = malloc(sizeof(PrefixTree));
-
+		root_->children[first] = malloc(sizeof(PrefixTree));
+		PrefixTree* node = root_->children[first];
+		
 		if (startCharacter > 0)
 		{
-			PrefixTree_ctorInit(node->children[first], makeStringWith(prefix_.data + startCharacter, prefix_.len - startCharacter));
+			PrefixTree_ctorInit(node, makeStringWith(prefix_.data + startCharacter, prefix_.len - startCharacter));
 			destroyString(&prefix_);
 		}
 		else
 		{
-			PrefixTree_ctorInit(node->children[first], prefix_);
+			PrefixTree_ctorInit(node, prefix_);
 		}
+
+		node->isLeaf = true;
 	}
 }
