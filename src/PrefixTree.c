@@ -193,6 +193,7 @@ void insertPrefixIntoTree(PrefixTree* root_, String prefix_, size_t startCharact
 
 				node->children[prefix_.data[newStart]] = malloc(sizeof(PrefixTree));
 				PrefixTree_ctorInit(node->children[prefix_.data[newStart]], makeStringWith(prefix_.data + newStart, prefix_.len - newStart));
+				node->children[prefix_.data[newStart]]->isLeaf = true;
 
 				break;
 			}
