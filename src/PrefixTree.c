@@ -3,6 +3,7 @@
 #include <Filter/BufferedFileReader.h>
 
 #include <stdlib.h>
+#include <string.h>
 #include <assert.h>
 
 #define TAB_SIZE 4
@@ -113,7 +114,7 @@ PrefixTree* buildPrefixTree(const char* prefixFilePath)
 	String word = bfrReadUntilWs(reader);
 	while(word.len > 0)
 	{
-		printf("Read word: %.*s\n", word.len, word.data);
+		printf("Read prefix: %.*s\n", word.len, word.data);
 
 		insertPrefixIntoTree(prefixTree, word, 0);
 		
@@ -216,4 +217,36 @@ void insertPrefixIntoTree(PrefixTree* root_, String prefix_, size_t startCharact
 			break;
 		}
 	}
+}
+
+///////////////////////////////////////////////////////////
+bool prefixFilter(PrefixTree const* root_, String str_, String* matchedPrefix)
+{
+	size_t charIdx = 0;
+
+	if (matchedPrefix)
+		*matchedPrefix = makeString();
+
+	while(charIdx < str_.len)
+	{
+		root_ = root_->children[str_.data[charIdx]];
+		if (!root_)
+			return false;
+
+		if (charIdx + root_->prefix.len > str_.len)
+			return false;
+
+		if (strncmp(str_.data + charIdx, root_->prefix.data, root_->prefix.len) != 0)
+			return false;
+
+		if (matchedPrefix)
+			appendString(matchedPrefix, &root_->prefix);
+
+		if (root_->isLeaf)
+			return true;
+		
+		charIdx += root_->prefix.len;
+	}
+
+	return false;
 }

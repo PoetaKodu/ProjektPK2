@@ -21,3 +21,5 @@ PrefixTree* buildPrefixTree(const char* prefixFilePath);
 void destroyPrefixTree(PrefixTree* prefixTree_);
 
 void insertPrefixIntoTree(PrefixTree* root_, String prefix_, size_t startCharacter);
+
+bool prefixFilter(PrefixTree const* root_, String str_, String* matchedPrefix);
