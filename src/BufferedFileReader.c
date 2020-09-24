@@ -54,6 +54,7 @@ String bfrReadUntilWs(BufferedFileReader* reader)
 
 	int64_t sepIdx = -1;
 	bool skippedEntireBuf;
+	size_t iteration = 0;
 	do
 	{
 		skippedEntireBuf = false;
@@ -72,9 +73,12 @@ String bfrReadUntilWs(BufferedFileReader* reader)
 			}
 
 			// Trim whitespaces on the left:
-			String buf = wrapWithString(reader->buf, reader->readCount);
-			int64_t nonWs = findNonWsInString(&buf, 0);
-			bfrConsume(reader, nonWs > -1 ? nonWs : buf.len);
+			if (iteration == 0)
+			{
+				String buf = wrapWithString(reader->buf, reader->readCount);
+				int64_t nonWs = findNonWsInString(&buf, 0);
+				bfrConsume(reader, nonWs > -1 ? nonWs : buf.len);
+			}
 		}
 		if (fileError)
 			break;
@@ -90,6 +94,8 @@ String bfrReadUntilWs(BufferedFileReader* reader)
 
 		if (nonWs == -1 && sepIdx == 0 && result.len == 0)
 			skippedEntireBuf = true;
+
+		++iteration;
 	}
 	while(sepIdx == -1 || skippedEntireBuf);
 
