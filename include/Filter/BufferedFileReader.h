@@ -6,7 +6,7 @@
 #include <stdbool.h>
 
 /// Rozmiar bloku danych wczytywanego przez BufferedFileReader
-#define BFR_BUF_SIZE 10
+#define BFR_BUF_SIZE 1024 * 1024
 
 /** Buforowany wczytywacz (reader) danych z pliku.
  * Wczytuje dane z pliku porcjami w celu zwiększenia wydajności.
