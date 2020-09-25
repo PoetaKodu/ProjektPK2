@@ -33,7 +33,7 @@ bool shouldContinueDown(PrefixTree* node_, String prefix_, size_t* startCharacte
 ////////////////////// IMPLEMENTACJA ////////////////////////////
 
 ///////////////////////////////////////////////////////////
-void PrefixTree_ctor(PrefixTree* node_)
+void initPrefixTreeNode(PrefixTree* node_)
 {
 	node_->isLeaf = false;
 	node_->prefix = makeString();
@@ -44,7 +44,7 @@ void PrefixTree_ctor(PrefixTree* node_)
 }
 
 ///////////////////////////////////////////////////////////
-void PrefixTree_ctorInit(PrefixTree* node_, String str_)
+void initPrefixTreeNodeWith(PrefixTree* node_, String str_)
 {
 	node_->isLeaf = false;
 	node_->prefix = str_;
@@ -59,7 +59,7 @@ void PrefixTree_ctorInit(PrefixTree* node_, String str_)
 PrefixTree* makePrefixTree()
 {
 	PrefixTree* pt = malloc(sizeof(PrefixTree));
-	PrefixTree_ctor(pt);
+	initPrefixTreeNode(pt);
 	return pt;
 }
 
@@ -156,7 +156,7 @@ void insertPrefixIntoTree(PrefixTree* root_, String prefix_)
 				// Notka: zamiennik nie jest liściem!
 				PrefixTree* replacement = malloc(sizeof(PrefixTree));
 				{
-					PrefixTree_ctorInit(replacement, splitted.left);
+					initPrefixTreeNodeWith(replacement, splitted.left);
 					root_->children[first] = replacement;
 					node = root_->children[first];
 				}
@@ -170,7 +170,7 @@ void insertPrefixIntoTree(PrefixTree* root_, String prefix_)
 				PrefixTree* newlyAdded = malloc(sizeof(PrefixTree));
 				{
 					String pref = makeStringWith(prefix_.data + newStart, prefix_.len - newStart);
-					PrefixTree_ctorInit(newlyAdded, pref);
+					initPrefixTreeNodeWith(newlyAdded, pref);
 					newlyAdded->isLeaf = true;
 
 					node->children[prefix_.data[newStart]] = newlyAdded;
@@ -191,14 +191,14 @@ void insertPrefixIntoTree(PrefixTree* root_, String prefix_)
 			{
 				String prefixCutout = makeStringWith(prefix_.data + startCharacter, prefix_.len - startCharacter);
 
-				PrefixTree_ctorInit(node, prefixCutout);
+				initPrefixTreeNodeWith(node, prefixCutout);
 
 				// Zwalniam stary, nieużywany prefix.
 				destroyString(&prefix_);
 			}
 			else
 			{
-				PrefixTree_ctorInit(node, prefix_);
+				initPrefixTreeNodeWith(node, prefix_);
 			}
 
 			node->isLeaf = true;
