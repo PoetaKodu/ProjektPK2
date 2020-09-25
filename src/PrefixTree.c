@@ -6,8 +6,6 @@
 #include <string.h>
 #include <assert.h>
 
-#define TAB_SIZE 4
-
 ////////////////////// DEKLARACJE (PRIV) ////////////////////////
 
 /** Dynamicznie tworzy korzeń drzewa prefixowego. 
@@ -213,9 +211,6 @@ bool prefixFilter(PrefixTree const* root_, String str_)
 {
 	size_t charIdx = 0;
 
-	// if (matchedPrefix_)
-	// 	*matchedPrefix_ = makeString();
-
 	while(charIdx < str_.len)
 	{
 		root_ = root_->children[str_.data[charIdx]];
@@ -230,10 +225,6 @@ bool prefixFilter(PrefixTree const* root_, String str_)
 		// Wszystkie znaki prefixu pasują?
 		if (strncmp(str_.data + charIdx, root_->prefix.data, root_->prefix.len) != 0)
 			return false;
-
-		// TEMP: zbieram info o faktycznym przedrostku.
-		// if (matchedPrefix_)
-		// 	appendString(matchedPrefix_, &root_->prefix);
 
 		// Czy jest liściem drzewa?
 		if (root_->isLeaf)
