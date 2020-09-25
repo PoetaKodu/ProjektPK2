@@ -5,11 +5,11 @@
 #include <assert.h>
 
 ///////////////////////////////////////////
-bool filterInputFile(char const* inFilePath, char const* outFilePath, PrefixTree const* prefixTree)
+bool filterInputFile(char const* inFilePath_, char const* outFilePath_, PrefixTree const* prefixTree_)
 {
-	assert(inFilePath != NULL && outFilePath != NULL);
+	assert(inFilePath_ != NULL && outFilePath_ != NULL);
 
-	BufferedFileReader* reader = bfrOpen(inFilePath);
+	BufferedFileReader* reader = bfrOpen(inFilePath_);
 	if (!reader)
 		return false;
 
@@ -17,7 +17,7 @@ bool filterInputFile(char const* inFilePath, char const* outFilePath, PrefixTree
 	while(word.len > 0)
 	{
 		// String prefix;
-		bool filterResult = prefixFilter(prefixTree, word);
+		bool filterResult = prefixFilter(prefixTree_, word);
 
 		printf("(%c) Word: %.*s", filterResult ? '+' : '-', word.len, word.data);
 		// if (filterResult)

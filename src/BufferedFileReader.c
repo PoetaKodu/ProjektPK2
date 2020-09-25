@@ -4,9 +4,27 @@
 #include <string.h>
 #include <assert.h>
 
-BufferedFileReader* bfrOpen(const char* path)
+/////////////////////// DEKLARACJE (PRIV) ///////////////////
+
+/** Wczytuje następny blok danych. 
+ * Rozmiar bloku jest określany makrem @see BFR_BUF_SIZE
+ * @param reader_ 		wskaźnik na reader
+ * @return true jeśli udało się wczytać BFR_BUF_SIZE bajtów, w innym wypadku false.
+ * */
+bool bfrReadNext(BufferedFileReader* reader_);
+
+/** Usuwa z bufora określoną liczbę znaków.
+ * @param reader_ 		wskaźnik na reader
+ * @param count_ 		liczba znaków
+ * */
+void bfrConsume(BufferedFileReader* reader_, size_t count_);
+
+/////////////////////// IMPLEMENTACJA ///////////////////////
+
+//////////////////////////////////////////////////
+BufferedFileReader* bfrOpen(const char* path_)
 {
-	FILE* f = fopen(path, "r");
+	FILE* f = fopen(path_, "r");
 	
 	BufferedFileReader* reader = NULL;	
 	if (f)
@@ -18,6 +36,7 @@ BufferedFileReader* bfrOpen(const char* path)
 	return reader;
 }
 
+//////////////////////////////////////////////////
 bool bfrReadNext(BufferedFileReader* reader_)
 {
 	assert(reader_ != NULL);
@@ -26,6 +45,7 @@ bool bfrReadNext(BufferedFileReader* reader_)
 	return reader_->readCount == BFR_BUF_SIZE;
 }
 
+//////////////////////////////////////////////////
 void bfrConsume(BufferedFileReader* reader_, size_t count_)
 {
 	assert(reader_ != NULL);
@@ -46,9 +66,10 @@ void bfrConsume(BufferedFileReader* reader_, size_t count_)
 	}
 }
 
-String bfrReadUntilWs(BufferedFileReader* reader)
+//////////////////////////////////////////////////
+String bfrReadUntilWs(BufferedFileReader* reader_)
 {
-	assert(reader != NULL);
+	assert(reader_ != NULL);
 
 	String result = makeString();
 
@@ -60,13 +81,13 @@ String bfrReadUntilWs(BufferedFileReader* reader)
 		skippedEntireBuf = false;
 
 		bool fileError = false;
-		while (reader->readCount == 0 || fileError)
+		while (reader_->readCount == 0 || fileError)
 		{
 			// Read next portion of memory
-			bool succeeded = bfrReadNext(reader);
+			bool succeeded = bfrReadNext(reader_);
 
 			// No more data to read.
-			if (!succeeded && reader->readCount == 0)
+			if (!succeeded && reader_->readCount == 0)
 			{
 				fileError = true;
 				break;
@@ -75,22 +96,22 @@ String bfrReadUntilWs(BufferedFileReader* reader)
 			// Trim whitespaces on the left:
 			if (iteration == 0)
 			{
-				String buf = wrapWithString(reader->buf, reader->readCount);
+				String buf = wrapWithString(reader_->buf, reader_->readCount);
 				int64_t nonWs = findNonWsInString(&buf, 0);
-				bfrConsume(reader, nonWs > -1 ? nonWs : buf.len);
+				bfrConsume(reader_, nonWs > -1 ? nonWs : buf.len);
 			}
 		}
 		if (fileError)
 			break;
 
-		String appended = wrapWithString(reader->buf, reader->readCount);
+		String appended = wrapWithString(reader_->buf, reader_->readCount);
 		sepIdx = findWsInString(&appended, 0);
 
 		size_t appendedLength = sepIdx > -1 ? sepIdx : appended.len;
 		appendStringRaw(&result, appended.data, appendedLength);
 		
 		int64_t nonWs = findNonWsInString(&appended, appendedLength);
-		bfrConsume(reader, nonWs > -1 ? nonWs : appended.len);
+		bfrConsume(reader_, nonWs > -1 ? nonWs : appended.len);
 
 		if (nonWs == -1 && sepIdx == 0 && result.len == 0)
 			skippedEntireBuf = true;
@@ -103,11 +124,12 @@ String bfrReadUntilWs(BufferedFileReader* reader)
 	return result;
 }
 
-void bfrClose(BufferedFileReader* reader)
+//////////////////////////////////////////////////
+void bfrClose(BufferedFileReader* reader_)
 {
-	assert(reader != NULL);
+	assert(reader_ != NULL);
 
-	fclose(reader->file);
+	fclose(reader_->file);
 
-	free(reader);
+	free(reader_);
 }
