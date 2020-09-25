@@ -38,9 +38,6 @@ bool filterInputFile(char const* inFilePath_, char const* outFilePath_, PrefixTr
 		// String prefix;
 		bool filterResult = prefixFilter(prefixTree_, word);
 
-		printf("(%c) Word: %.*s", filterResult ? '+' : '-', word.len, word.data);
-		putchar('\n');
-
 		if (filterResult)
 		{
 			if (bufLen + word.len + 1 <= OUTPUT_BUF_SIZE)

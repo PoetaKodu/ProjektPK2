@@ -32,68 +32,6 @@ bool shouldContinueDown(PrefixTree* node_, String prefix_, size_t* startCharacte
 
 ////////////////////// IMPLEMENTACJA ////////////////////////////
 
-
-///////////////////////////////////////////////////
-void printIndent(size_t indent_)
-{
-	for(size_t i = 0; i < indent_; ++i)
-	{
-		for (int j = 0; j < TAB_SIZE; ++j)
-			putchar(' ');
-	}
-}
-
-///////////////////////////////////////////////////
-void printTree(PrefixTree *node_, size_t indent_)
-{
-	if (node_)
-	{
-		printIndent(indent_); fputs("{\n", stdout);
-	
-		printIndent(indent_+1); fputs("\"prefix\": \"", stdout);
-		for(size_t i = 0; i < node_->prefix.len; ++i)
-			putchar(node_->prefix.data[i]);
-		fputs("\"", stdout);
-		
-		size_t numValidChildren = 0;
-		for(size_t i = 0; i < CHAR_COMBINATIONS; ++i)
-			if (node_->children[i] != NULL)
-				++numValidChildren;
-
-		if (numValidChildren > 0)
-		{
-			fputs(",\n", stdout);
-			printIndent(indent_+1); fputs("\"children\": [", stdout);
-			numValidChildren = 0;
-			for(size_t i = 0; i < CHAR_COMBINATIONS; ++i)
-			{
-				if (node_->children[i] != NULL)
-				{
-					if (numValidChildren > 0)
-						fputs(",\n", stdout);
-					else
-						putchar('\n');
-					printTree(node_->children[i], indent_+2);
-
-					++numValidChildren;
-				}
-			}
-			if (numValidChildren > 0)
-			{
-				putchar('\n');
-				printIndent(indent_+1);
-			}
-			fputs("]\n", stdout);
-		}
-		else
-		{
-			putchar('\n');
-		}
-
-		printIndent(indent_); fputs("}", stdout);
-	}
-}
-
 ///////////////////////////////////////////////////////////
 void PrefixTree_ctor(PrefixTree* node_)
 {
@@ -125,7 +63,6 @@ PrefixTree* makePrefixTree()
 	return pt;
 }
 
-
 ///////////////////////////////////////////////////////////
 PrefixTree* buildPrefixTree(const char* prefixFilePath)
 {
@@ -140,13 +77,10 @@ PrefixTree* buildPrefixTree(const char* prefixFilePath)
 	String word = bfrReadUntilWs(reader);
 	while(word.len > 0)
 	{
-		printf("Read prefix: %.*s\n", word.len, word.data);
-
 		insertPrefixIntoTree(prefixTree, word);
 		
 		word = bfrReadUntilWs(reader);
 	}
-	printTree(prefixTree, 0);
 	bfrClose(reader);
 
 	return prefixTree;
