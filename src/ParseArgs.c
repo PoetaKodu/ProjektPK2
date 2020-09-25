@@ -3,9 +3,10 @@
 #include <assert.h>
 #include <string.h>
 
-bool parseArgs(int argc, char *argv[], LaunchConfig * config)
+////////////////////////////////////////////////
+bool parseArgs(int argc, char *argv[], LaunchConfig * config_)
 {
-	assert(config != NULL);
+	assert(config_ != NULL);
 
 	bool paramProvided[3] = { false, false, false };
 
@@ -17,15 +18,15 @@ bool parseArgs(int argc, char *argv[], LaunchConfig * config)
 
 			if (strcmp(argv[i], "-i") == 0) {
 				paramProvided[0] = true;
-				dest = config->inFilePath;
+				dest = config_->inFilePath;
 			}
 			else if (strcmp(argv[i], "-f") == 0) {
 				paramProvided[1] = true;
-				dest = config->prefixFilePath;
+				dest = config_->prefixFilePath;
 			}
 			else if (strcmp(argv[i], "-o") == 0) {
 				paramProvided[2] = true;
-				dest = config->outFilePath;
+				dest = config_->outFilePath;
 			}
 
 			if (dest != NULL) {

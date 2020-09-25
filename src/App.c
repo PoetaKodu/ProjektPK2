@@ -5,16 +5,18 @@
 #include <stdlib.h>
 #include <assert.h>
 
-bool run(LaunchConfig *launchCfg)
+/////////////////////////////////
+bool run(LaunchConfig *launchCfg_)
 {
-	assert(launchCfg != NULL);
+	assert(launchCfg_ != NULL);
 
-	PrefixTree const* prefixTree = buildPrefixTree(launchCfg->prefixFilePath);
+	PrefixTree const* prefixTree = buildPrefixTree(launchCfg_->prefixFilePath);
 	if (!prefixTree)
 		return false;
 
-	bool result = filterInputFile(launchCfg->inFilePath, launchCfg->outFilePath, prefixTree);
+	bool result = filterInputFile(launchCfg_->inFilePath, launchCfg_->outFilePath, prefixTree);
 
+	// Zwalnianie pamięci:
 	destroyPrefixTree(prefixTree);
 	free(prefixTree);
 

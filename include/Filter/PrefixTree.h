@@ -7,14 +7,14 @@
 
 #define CHAR_COMBINATIONS 256
 
+/** Węzeł drzewa prefixowego.
+ * */
 typedef struct PrefixTree
 {
-	struct PrefixTree* children[CHAR_COMBINATIONS];
-	String prefix;
-	bool isLeaf;
+	struct PrefixTree* children[CHAR_COMBINATIONS];	///< Dzieci węzła
+	String prefix;									///< Zawartość (część prefixu) węzła
+	bool isLeaf;									///< Czy aktualny węzeł jest liściem drzewa?
 } PrefixTree;
-
-
 
 /** Buduje drzewo przedrostkowe z wyrazów wczytanych z pliku. 
  * @param prefixFilePath_ 	ścieżka do pliku z wyrazami

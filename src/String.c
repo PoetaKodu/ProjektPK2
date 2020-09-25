@@ -43,18 +43,6 @@ String wrapWithString(char *bytes_, size_t len_)
 }
 
 //////////////////////////////////////////////////////////////
-String wrapLiteralString(char const* literal_)
-{
-	String str;
-
-	str.data = literal_;
-	str.capacity = strlen(literal_);
-	str.len = str.capacity;
-
-	return str;
-}
-
-//////////////////////////////////////////////////////////////
 void destroyString(String* str_)
 {
 	assert(str_ != NULL);
@@ -62,20 +50,6 @@ void destroyString(String* str_)
 	free(str_->data);
 	str_->capacity = 0;
 	str_->len = 0;
-}
-
-//////////////////////////////////////////////////////////////
-String copyString(String other_)
-{
-	return makeStringWith(other_.data, other_.len);
-}
-
-//////////////////////////////////////////////////////////////
-void cutStringLeft(String *str_, size_t where_)
-{
-	assert(str_ != NULL && where_ <= str_->len);
-
-	str_->len = where_;
 }
 
 //////////////////////////////////////////////////////////////
